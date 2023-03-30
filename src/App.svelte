@@ -4,6 +4,7 @@
   import 'leaflet.markercluster';
   import {MarkerClusterGroup} from 'leaflet';
   import Loader from "./components/Loader.svelte";
+  import Slider from "./components/Slider.svelte";
 
   let map: L.Map;
   let cluster: L.LayerGroup;
@@ -19,11 +20,21 @@
   }
 
   let loaderComponent: Loader;
-  const loader = new L.Control({ position: 'topright'});
-  loader.onAdd = (map: L.Map) => {
+  const loader = new L.Control({position: 'topright'});
+  loader.onAdd = (_: L.Map) => {
     const target = L.DomUtil.create('div');
-    loaderComponent = new Loader({ target, props: {} });
+    L.DomEvent.disableClickPropagation(target);
+    loaderComponent = new Loader({target, props: {}});
     loaderComponent.$on('locations', onLoadLocations);
+    return target;
+  }
+
+  let sliderComponent: Slider;
+  const slider = new L.Control({position: "bottomleft"});
+  slider.onAdd = (_: L.Map) => {
+    const target = L.DomUtil.create('div');
+    L.DomEvent.disableClickPropagation(target);
+    sliderComponent = new Slider({target, props: {min: 0, max: 1}});
     return target;
   }
 
@@ -34,7 +45,8 @@
         'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}
       ))
-      .addControl(loader);
+      .addControl(loader)
+      .addControl(slider);
   }
 
   function mapAction(container: HTMLElement) {

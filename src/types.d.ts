@@ -21,3 +21,12 @@ interface GeoLocation {
 interface LocationData {
   locations: GeoLocation[];
 }
+
+interface SliderDragEvent {
+  x: number;
+  baseline: {
+    x: number;
+    s: number;
+    e: number;
+  }
+}
