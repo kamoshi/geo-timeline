@@ -7,15 +7,16 @@
   import Loader from "./components/Loader.svelte";
   import Slider from "./components/Slider.svelte";
   import {createFilter, filterMarkers, findBounds} from "./utils";
+  import {range} from "./store";
 
   let map: L.Map;
   let cluster: MarkerClusterGroup;
   let markers: DataMarker[] = [];
-  $: bounds = findBounds(markers);
 
   function onLoadLocations(event: CustomEvent<GeoLocation[]>) {
     cluster?.remove();
     markers = DataMarker.fromGeoLocations(event.detail);
+    $range = findBounds(markers);
     cluster = new MarkerClusterGroup().addTo(map);
   }
 
@@ -34,7 +35,7 @@
   slider.onAdd = (_: L.Map) => {
     const target = L.DomUtil.create('div');
     L.DomEvent.disableClickPropagation(target);
-    sliderComponent = new Slider({target, props: {min: 0, max: 1}});
+    sliderComponent = new Slider({target, props: {}});
     sliderComponent.$on('change', (e: CustomEvent<SliderSelection>) => applyFilter(e.detail));
     return target;
   }
@@ -62,7 +63,7 @@
 
   function applyFilter(selection: SliderSelection) {
     if (!map || !cluster) return;
-    const filter = createFilter(bounds, selection);
+    const filter = createFilter($range, selection);
     const {show, hide} = filterMarkers(filter, markers);
     cluster.removeLayers(hide.filter(l => cluster.hasLayer(l)));
     cluster.addLayers(show.filter(l => !cluster.hasLayer(l)));

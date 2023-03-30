@@ -16,7 +16,7 @@ export function toLatLng(location: GeoLocation): [number, number] {
   return [+location.latitudeE7/10000000, +location.longitudeE7/10000000];
 }
 
-export function findBounds(markers: DataMarker[]): DateBounds {
+export function findBounds(markers: DataMarker[]): DateRange {
   return markers.reduce(
     (acc, next) => {
       if (next.date.isBefore(acc.s)) acc.s = next.date;
@@ -27,7 +27,7 @@ export function findBounds(markers: DataMarker[]): DateBounds {
   );
 }
 
-export function createFilter({s, e}: DateBounds, selection: SliderSelection): DateBounds {
+export function createFilter({s, e}: DateRange, selection: SliderSelection): DateRange {
   const span = e.valueOf() - s.valueOf();
   return {
     s: dayjs(s.valueOf() + span * selection.s),

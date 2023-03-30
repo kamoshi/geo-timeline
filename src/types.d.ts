@@ -42,7 +42,7 @@ interface MarkerData {
   date: Dayjs;
 }
 
-interface DateBounds {
+interface DateRange {
   s: Dayjs;
   e: Dayjs;
 }

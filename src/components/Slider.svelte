@@ -1,16 +1,20 @@
 <script lang="ts">
   import {createEventDispatcher} from "svelte";
-  import {clamp, getEventCoords} from "../utils";
-
+  import {clamp, createFilter, getEventCoords} from "../utils";
+  import {range} from "../store";
   const dispatch = createEventDispatcher();
-  const model = {s: 0.33, e: 1};
 
+  let model = {s: 0.33, e: 1};
   let slider: HTMLElement;
+  let dragging = false;
 
-  function dragging(node: HTMLElement) {
+  $: bounds = createFilter($range, model);
+
+  function draggable(node: HTMLElement) {
     const hookGrab = [['mousedown', grab], ['touchstart', grab]] as const;
 
     function grab(e: MouseEvent | TouchEvent) {
+      dragging = true;
       const hooks = [['mousemove', move], ['touchmove', move], ['mouseup', release], ['touchend', release]] as const;
       const [oldX, _] = getEventCoords(e);
       const baseline = {...model} as const;
@@ -25,6 +29,7 @@
         for (const [type, func] of hooks)
           document.removeEventListener(type, func);
         dispatch('change', {...model});
+        dragging = false;
       }
 
       for (const [type, func] of hooks)
@@ -46,8 +51,8 @@
       const { left, width } = slider.getBoundingClientRect();
       const percent = clamp((e.detail.x - left) / width, 0, 1);
       switch (side) {
-        case "l": return [model.s, model.e] = [percent, Math.max(model.e, percent)];
-        case "r": return [model.s, model.e] = [Math.min(model.s, percent), percent];
+        case "l": return model = {s: percent, e: Math.max(model.e, percent)};
+        case "r": return model = {s: Math.min(model.s, percent), e: percent};
       }
     }
   }
@@ -64,19 +69,19 @@
   }
 </script>
 
-{model.s} {model.e}
-<div class="container" style="--s:{model.s};--e:{model.e}">
+
+<div class="container" class:dragging style="--s:{model.s};--e:{model.e}">
   <div class="slider" bind:this={slider}>
     <div class="range"
-         use:dragging
+         use:draggable
          on:dragged|preventDefault|stopPropagation={shiftSlider}>
     </div>
-    <div class="handle left"
-         use:dragging
+    <div class="handle left" data-date={bounds.s.format("DD-MM-YYYY")}
+         use:draggable
          on:dragged|preventDefault|stopPropagation={moveHandles('l')}>
     </div>
-    <div class="handle right"
-         use:dragging
+    <div class="handle right" data-date={bounds.e.format("DD-MM-YYYY")}
+         use:draggable
          on:dragged|preventDefault|stopPropagation={moveHandles('r')}>
     </div>
   </div>
@@ -85,7 +90,7 @@
 
 <style lang="scss">
   .container {
-    width: 10em;
+    width: 40em;
     height: 1.5em;
     user-select: none;
     white-space: nowrap;
@@ -109,7 +114,7 @@
       width: 0;
       height: 0;
 
-      &:after {
+      &::after {
         content: ' ';
         box-sizing: border-box;
         position: absolute;
@@ -138,6 +143,21 @@
       left: calc(100% * var(--s));
       right: calc(100% * (1 - var(--e)));
       background-color: #34a1ff;
+    }
+
+    &.dragging {
+      .handle::before {
+        content: attr(data-date);
+        display: block;
+        position: absolute;
+        transform: translate(-50%, -150%);
+        z-index: 10;
+        padding: 0 0.4em;
+        background-color: black;
+        color: white;
+        opacity: 0.5;
+        border-radius: 4px;
+      }
     }
   }
 </style>
