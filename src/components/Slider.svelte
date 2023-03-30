@@ -1,6 +1,8 @@
 <script lang="ts">
+  import {createEventDispatcher} from "svelte";
   import {clamp, getEventCoords} from "../utils";
 
+  const dispatch = createEventDispatcher();
   const model = {s: 0.33, e: 1};
 
   let slider: HTMLElement;
@@ -22,6 +24,7 @@
       function release(_: MouseEvent | TouchEvent) {
         for (const [type, func] of hooks)
           document.removeEventListener(type, func);
+        dispatch('change', {...model});
       }
 
       for (const [type, func] of hooks)
@@ -61,7 +64,7 @@
   }
 </script>
 
-
+{model.s} {model.e}
 <div class="container" style="--s:{model.s};--e:{model.e}">
   <div class="slider" bind:this={slider}>
     <div class="range"

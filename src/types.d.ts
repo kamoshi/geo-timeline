@@ -30,3 +30,7 @@ interface SliderDragEvent {
     e: number;
   }
 }
+
+interface MarkerData {
+  date: import("dayjs").Dayjs;
+}

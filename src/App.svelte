@@ -1,22 +1,24 @@
 <script lang="ts">
+  import dayjs from "dayjs";
   import L from 'leaflet';
   import "leaflet.markercluster/dist/MarkerCluster.Default.css";
   import 'leaflet.markercluster';
   import {MarkerClusterGroup} from 'leaflet';
+  import {DataMarker} from "./marker";
   import Loader from "./components/Loader.svelte";
   import Slider from "./components/Slider.svelte";
+  import {filterMarkers} from "./utils";
 
   let map: L.Map;
-  let cluster: L.LayerGroup;
+  let cluster: MarkerClusterGroup;
+  let markers: DataMarker[] = [];
+
+  const filter = {s: dayjs().set('year', 2017).set('month', 1), e: dayjs().set('year', 2017).set('month', 12)};
 
   function onLoadLocations(event: CustomEvent<GeoLocation[]>) {
-    if (!map) return;
-    const newCluster = new MarkerClusterGroup();
-    const markers = event.detail.map(l => L.marker([+l.latitudeE7/10000000, +l.longitudeE7/10000000]));
-    newCluster.addLayers(markers);
     cluster?.remove();
-    newCluster.addTo(map);
-    cluster = newCluster;
+    markers = DataMarker.fromGeoLocations(event.detail);
+    cluster = new MarkerClusterGroup().addTo(map);
   }
 
   let loaderComponent: Loader;
@@ -29,12 +31,18 @@
     return target;
   }
 
+  function onRangeChange(e: CustomEvent) {
+    console.log(e.detail);
+    updateMarkerLayer();
+  }
+
   let sliderComponent: Slider;
   const slider = new L.Control({position: "bottomleft"});
   slider.onAdd = (_: L.Map) => {
     const target = L.DomUtil.create('div');
     L.DomEvent.disableClickPropagation(target);
     sliderComponent = new Slider({target, props: {min: 0, max: 1}});
+    sliderComponent.$on('change', onRangeChange);
     return target;
   }
 
@@ -57,6 +65,14 @@
         map = null;
       }
     }
+  }
+
+  function updateMarkerLayer() {
+    if (!map || !cluster) return;
+    const {show, hide} = filterMarkers(filter, markers);
+    console.log(show);
+    cluster.removeLayers(hide.filter(l => cluster.hasLayer(l)));
+    cluster.addLayers(show.filter(l => !cluster.hasLayer(l)));
   }
 </script>
 
