@@ -1,3 +1,5 @@
+type Dayjs = import("dayjs").Dayjs;
+
 interface ActivityType {
   type: string;
   confidence: number;
@@ -31,6 +33,16 @@ interface SliderDragEvent {
   }
 }
 
+interface SliderSelection {
+  s: number;
+  e: number;
+}
+
 interface MarkerData {
-  date: import("dayjs").Dayjs;
+  date: Dayjs;
+}
+
+interface DateBounds {
+  s: Dayjs;
+  e: Dayjs;
 }

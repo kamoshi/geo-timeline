@@ -1,5 +1,7 @@
 import type {DataMarker} from "./marker";
 import type {Dayjs} from "dayjs";
+import dayjs from "dayjs";
+
 
 
 export function clamp(value, min, max) {
@@ -12,6 +14,25 @@ export function getEventCoords(e: MouseEvent | TouchEvent) {
 
 export function toLatLng(location: GeoLocation): [number, number] {
   return [+location.latitudeE7/10000000, +location.longitudeE7/10000000];
+}
+
+export function findBounds(markers: DataMarker[]): DateBounds {
+  return markers.reduce(
+    (acc, next) => {
+      if (next.date.isBefore(acc.s)) acc.s = next.date;
+      if (next.date.isAfter(acc.e)) acc.e = next.date;
+      return acc;
+    },
+    {s: dayjs(), e: dayjs(0)},
+  );
+}
+
+export function createFilter({s, e}: DateBounds, selection: SliderSelection): DateBounds {
+  const span = e.valueOf() - s.valueOf();
+  return {
+    s: dayjs(s.valueOf() + span * selection.s),
+    e: dayjs(s.valueOf() + span * selection.e)
+  }
 }
 
 export function filterMarkers(
