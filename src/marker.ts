@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import L from 'leaflet';
 import {toLatLng} from "./utils";
 import type {GeoLocation} from "./logic/validation";
@@ -12,11 +11,11 @@ export class DataMarker extends L.Marker {
     this.#data = {...data};
   }
 
-  get date(): dayjs.Dayjs {
+  get date(): Dayjs {
     return this.#data.date;
   }
 
   static fromGeoLocations(locations: GeoLocation[]) {
-    return locations.map(l => new DataMarker(toLatLng(l), {date: dayjs(+l.timestampMs)}));
+    return locations.map(l => new DataMarker(toLatLng(l), {date: l.timestampMs}));
   }
 }
