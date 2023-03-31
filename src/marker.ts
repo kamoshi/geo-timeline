@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import L from 'leaflet';
 import {toLatLng} from "./utils";
+import type {GeoLocation} from "./logic/validation";
 
 
 export class DataMarker extends L.Marker {

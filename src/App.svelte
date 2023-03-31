@@ -10,15 +10,14 @@
   import {range} from "./store";
   import type {GeoLocation} from "./logic/validation";
 
-  let map: L.Map;
-  let cluster: MarkerClusterGroup;
+  const cluster = new MarkerClusterGroup();
+  let map: L.Map | undefined;
   let markers: DataMarker[] = [];
 
   function onLoadLocations(event: CustomEvent<GeoLocation[]>) {
-    cluster?.remove();
+    cluster.clearLayers();
     markers = DataMarker.fromGeoLocations(event.detail);
     $range = findBounds(markers);
-    cluster = new MarkerClusterGroup().addTo(map);
   }
 
   let loaderComponent: Loader;
@@ -41,23 +40,21 @@
     return target;
   }
 
-  function createMap(container: HTMLElement): L.Map {
-    return L.map(container, {preferCanvas: true})
+  function displayMap(container: HTMLElement) {
+    map = L.map(container, {preferCanvas: true})
       .setView([39.8283, -98.5795], 5)
       .addLayer(L.tileLayer(
         'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}
       ))
+      .addLayer(cluster)
       .addControl(loader)
       .addControl(slider);
-  }
 
-  function mapAction(container: HTMLElement) {
-    map = createMap(container);
     return {
       destroy: () => {
-        map.remove();
-        map = null;
+        map?.remove();
+        map = undefined;
       }
     }
   }
@@ -71,7 +68,7 @@
   }
 </script>
 
-<div class="map" use:mapAction></div>
+<div class="map" use:displayMap></div>
 
 <style>
   .map {

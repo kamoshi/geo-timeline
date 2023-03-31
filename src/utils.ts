@@ -1,10 +1,9 @@
-import type {DataMarker} from "./marker";
-import type {Dayjs} from "dayjs";
 import dayjs from "dayjs";
+import type {DataMarker} from "./marker";
+import type {GeoLocation} from "./logic/validation";
 
 
-
-export function clamp(value, min, max) {
+export function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
@@ -36,7 +35,7 @@ export function createFilter({s, e}: DateRange, selection: SliderSelection): Dat
 }
 
 export function filterMarkers(
-  filter: {s: Dayjs, e: Dayjs},
+  filter: {s: dayjs.Dayjs, e: dayjs.Dayjs},
   markers: DataMarker[],
 ): {show: DataMarker[]; hide: DataMarker[]} {
   const show: DataMarker[] = [];
