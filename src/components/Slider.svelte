@@ -14,14 +14,14 @@
     const hookGrab = [['mousedown', grab], ['touchstart', grab]] as const;
 
     function grab(e: MouseEvent | TouchEvent) {
-      dragging = true;
       const hooks = [['mousemove', move], ['touchmove', move], ['mouseup', release], ['touchend', release]] as const;
       const [oldX, _] = getEventCoords(e);
-      const baseline = {...model} as const;
+      const baseline = {...model, x: oldX};
+      dragging = true;
 
       function move(e: MouseEvent | TouchEvent) {
         const [x, _] = getEventCoords(e);
-        const detail: SliderDragEvent = {x, baseline: {...baseline, x: oldX}};
+        const detail: SliderDragEvent = {x, baseline};
         node.dispatchEvent(new CustomEvent('dragged', {detail}));
       }
 

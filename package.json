@@ -12,6 +12,7 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.0.3",
     "@tsconfig/svelte": "^3.0.0",
+    "@types/leaflet": "^1.9.3",
     "@types/leaflet.markercluster": "^1.5.1",
     "svelte": "^3.55.1",
     "svelte-check": "^2.10.3",
@@ -20,8 +21,9 @@
     "vite": "^4.2.0"
   },
   "dependencies": {
-    "@types/leaflet": "^1.9.3",
     "dayjs": "^1.11.7",
+    "fp-ts": "^2.13.1",
+    "io-ts": "^2.2.20",
     "leaflet": "^1.9.3",
     "leaflet.markercluster": "^1.5.3"
   }

@@ -8,6 +8,7 @@
   import Slider from "./components/Slider.svelte";
   import {createFilter, filterMarkers, findBounds} from "./utils";
   import {range} from "./store";
+  import type {GeoLocation} from "./logic/validation";
 
   let map: L.Map;
   let cluster: MarkerClusterGroup;
