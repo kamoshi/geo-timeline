@@ -38,7 +38,7 @@ const LocationData = t.type({
   locations: t.array(GeoLocation),
 })
 
-export function validate(str: Option<string>) {
+export function parse(str: Option<string>) {
   return pipe(
     str,
     E.fromOption(() => "No data provided"),

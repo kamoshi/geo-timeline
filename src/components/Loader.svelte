@@ -2,22 +2,22 @@
   import * as O from 'fp-ts/Option';
   import * as E from 'fp-ts/Either';
   import {pipe} from "fp-ts/function";
-  import {validate, type LocationData} from "../logic/parsing";
+  import {parse, type LocationData} from "../logic/parsing";
   import {createEventDispatcher} from 'svelte';
   const dispatch = createEventDispatcher<LocationData>();
-
-  async function load(data: O.Option<string>) {
+  
+  async function load(data: Event & { currentTarget: EventTarget & HTMLInputElement; }) {
     pipe(
-      validate(data),
+      O.fromNullable(await data.currentTarget.files?.item(0)?.text()),
+      parse,
       E.match(
         (err) => console.error(err),
-        (json) => dispatch('locations', json.locations) as any,
+        (json) => dispatch('locations', json.locations),
       )
     )
   }
 </script>
 
 <div class="loader">
-  <input type="file" accept="application/json"
-         on:change={async e => await load(O.fromNullable(await e.target.files[0]?.text()))} />
+  <input type="file" accept="application/json" on:change={load} />
 </div>

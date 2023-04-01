@@ -73,16 +73,16 @@
 <div class="container" class:dragging style="--s:{model.s};--e:{model.e}">
   <div class="slider" bind:this={slider}>
     <div class="range"
-         use:draggable
-         on:dragged|preventDefault|stopPropagation={shiftSlider}>
+      use:draggable
+      on:dragged|preventDefault|stopPropagation={shiftSlider}>
     </div>
     <div class="handle left" data-date={bounds.s.format("DD-MM-YYYY")}
-         use:draggable
-         on:dragged|preventDefault|stopPropagation={moveHandles('l')}>
+      use:draggable
+      on:dragged|preventDefault|stopPropagation={moveHandles('l')}>
     </div>
     <div class="handle right" data-date={bounds.e.format("DD-MM-YYYY")}
-         use:draggable
-         on:dragged|preventDefault|stopPropagation={moveHandles('r')}>
+      use:draggable
+      on:dragged|preventDefault|stopPropagation={moveHandles('r')}>
     </div>
   </div>
 </div>
