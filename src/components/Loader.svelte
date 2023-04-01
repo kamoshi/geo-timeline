@@ -2,7 +2,7 @@
   import * as O from 'fp-ts/Option';
   import * as E from 'fp-ts/Either';
   import {pipe} from "fp-ts/function";
-  import {validate, type LocationData} from "../logic/validation";
+  import {validate, type LocationData} from "../logic/parsing";
   import {createEventDispatcher} from 'svelte';
   const dispatch = createEventDispatcher<LocationData>();
 

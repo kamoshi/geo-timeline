@@ -18,10 +18,20 @@ const UnixDate = new t.Type<Dayjs, string, unknown>(
   date => String(date.unix()),
 )
 
+const CoordinateE7 = new t.Type<number, number, unknown>(
+  'CoordinateE7',
+  (value): value is number => typeof value === 'number',
+  (value, context) => pipe(
+    t.number.validate(value, context),
+    E.map(n => n / 10000000),
+  ),
+  number => number * 10000000,
+)
+
 const GeoLocation = t.type({
   timestampMs: UnixDate,
-  latitudeE7: t.number,
-  longitudeE7: t.number,
+  latitudeE7: CoordinateE7,
+  longitudeE7: CoordinateE7,
 })
 
 const LocationData = t.type({

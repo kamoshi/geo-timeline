@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
 import type {DataMarker} from "./marker";
-import type {GeoLocation} from "./logic/validation";
 
 
 export function clamp(value: number, min: number, max: number) {
@@ -9,10 +8,6 @@ export function clamp(value: number, min: number, max: number) {
 
 export function getEventCoords(e: MouseEvent | TouchEvent) {
   return "clientX" in e ? [e.clientX, e.clientY] : [e.touches[0].clientX, e.touches[0].clientY];
-}
-
-export function toLatLng(location: GeoLocation): [number, number] {
-  return [+location.latitudeE7/10000000, +location.longitudeE7/10000000];
 }
 
 export function findBounds(markers: DataMarker[]): DateRange {

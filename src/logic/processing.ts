@@ -1,4 +1,4 @@
-import type {GeoLocation} from "./validation";
+import type {GeoLocation} from "./parsing";
 
 
 export function toHistogram(
