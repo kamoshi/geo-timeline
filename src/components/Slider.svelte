@@ -1,14 +1,14 @@
 <script lang="ts">
-  import {createEventDispatcher} from "svelte";
   import {clamp, createFilter, getEventCoords} from "../utils";
-  import {range} from "../store";
-  const dispatch = createEventDispatcher();
+  import {range, filter} from "../logic/store";
+  
 
-  let model = {s: 0.33, e: 1};
   let slider: HTMLElement;
   let dragging = false;
-
-  $: bounds = createFilter($range, model);
+  let model: Immutable<SliderSelection> = {s: 0.33, e: 1};
+  
+  $: bounds = createFilter($range, model) as Immutable<DateRange>;
+  range.subscribe(range => $filter = createFilter(range, model));
 
   function draggable(node: HTMLElement) {
     const hookGrab = [['mousedown', grab], ['touchstart', grab]] as const;
@@ -28,8 +28,8 @@
       function release(_: MouseEvent | TouchEvent) {
         for (const [type, func] of hooks)
           document.removeEventListener(type, func);
-        dispatch('change', {...model});
         dragging = false;
+        $filter = createFilter($range, model);
       }
 
       for (const [type, func] of hooks)
@@ -62,10 +62,10 @@
     const { x, baseline } = e.detail;
     const range = baseline.e - baseline.s;
     const shift = (x - baseline.x) / width;
-    [model.s, model.e] = [
-      clamp(baseline.s + shift, 0, 1 - range),
-      clamp(baseline.e + shift, range, 1),
-    ];
+    model = {
+      s: clamp(baseline.s + shift, 0, 1 - range),
+      e: clamp(baseline.e + shift, range, 1),
+    }
   }
 </script>
 

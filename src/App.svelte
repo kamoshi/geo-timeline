@@ -3,22 +3,20 @@
   import "leaflet.markercluster/dist/MarkerCluster.Default.css";
   import 'leaflet.markercluster';
   import {MarkerClusterGroup} from 'leaflet';
-  import {DataMarker} from "./marker";
+  import {DataMarker} from "./logic/marker";
   import Loader from "./components/Loader.svelte";
   import Slider from "./components/Slider.svelte";
-  import {createFilter, filterMarkers, findBounds} from "./utils";
-  import {range} from "./store";
-  import type {GeoLocation} from "./logic/parsing";
+  import {createFilter, filterMarkers} from "./utils";
+  import {range, locations, filter} from "./logic/store";
 
   const cluster = new MarkerClusterGroup();
   let map: L.Map | undefined;
   let markers: DataMarker[] = [];
 
-  function onLoadLocations(event: CustomEvent<GeoLocation[]>) {
+  locations.subscribe(locations => {
     cluster.clearLayers();
-    markers = DataMarker.fromGeoLocations(event.detail);
-    $range = findBounds(markers);
-  }
+    markers = DataMarker.fromGeoLocations(locations);
+  });
 
   let loaderComponent: Loader;
   const loader = new L.Control({position: 'topright'});
@@ -26,7 +24,6 @@
     const target = L.DomUtil.create('div');
     L.DomEvent.disableClickPropagation(target);
     loaderComponent = new Loader({target, props: {}});
-    loaderComponent.$on('locations', onLoadLocations);
     return target;
   }
 
@@ -36,7 +33,6 @@
     const target = L.DomUtil.create('div');
     L.DomEvent.disableClickPropagation(target);
     sliderComponent = new Slider({target, props: {}});
-    sliderComponent.$on('change', (e: CustomEvent<SliderSelection>) => applyFilter(e.detail));
     return target;
   }
 
@@ -59,14 +55,14 @@
     }
   }
 
-  function applyFilter(selection: SliderSelection) {
-    if (!map || !cluster) return;
-    const filter = createFilter($range, selection);
+  filter.subscribe(filter => {
+    if (!map) return;
     const {show, hide} = filterMarkers(filter, markers);
     cluster.removeLayers(hide.filter(l => cluster.hasLayer(l)));
     cluster.addLayers(show.filter(l => !cluster.hasLayer(l)));
-  }
+  })
 </script>
+
 
 <div class="map" use:displayMap></div>
 

@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
-import type {DataMarker} from "./marker";
+import type {GeoLocation} from "./logic/parsing";
+import type {DataMarker} from "./logic/marker";
 
 
 export function clamp(value: number, min: number, max: number) {
@@ -10,11 +11,11 @@ export function getEventCoords(e: MouseEvent | TouchEvent) {
   return "clientX" in e ? [e.clientX, e.clientY] : [e.touches[0].clientX, e.touches[0].clientY];
 }
 
-export function findBounds(markers: DataMarker[]): DateRange {
-  return markers.reduce(
+export function findBounds(locations: Immutable<GeoLocation[]>): DateRange {
+  return locations.reduce(
     (acc, next) => {
-      if (next.date.isBefore(acc.s)) acc.s = next.date;
-      if (next.date.isAfter(acc.e)) acc.e = next.date;
+      if (next.timestampMs.isBefore(acc.s)) acc.s = next.timestampMs;
+      if (next.timestampMs.isAfter(acc.e)) acc.e = next.timestampMs;
       return acc;
     },
     {s: dayjs(), e: dayjs(0)},
@@ -30,7 +31,7 @@ export function createFilter({s, e}: DateRange, selection: SliderSelection): Dat
 }
 
 export function filterMarkers(
-  filter: {s: dayjs.Dayjs, e: dayjs.Dayjs},
+  filter: Immutable<DateRange>,
   markers: DataMarker[],
 ): {show: DataMarker[]; hide: DataMarker[]} {
   const show: DataMarker[] = [];

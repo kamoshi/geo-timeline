@@ -1,5 +1,5 @@
 import L from 'leaflet';
-import type {GeoLocation} from "./logic/parsing";
+import type {GeoLocation} from "./parsing";
 
 
 export class DataMarker extends L.Marker {
@@ -14,7 +14,7 @@ export class DataMarker extends L.Marker {
     return this.#data.date;
   }
 
-  static fromGeoLocations(locations: GeoLocation[]) {
+  static fromGeoLocations(locations: Immutable<GeoLocation[]>) {
     return locations.map(l => new DataMarker([l.latitudeE7, l.longitudeE7], {date: l.timestampMs}));
   }
 }
