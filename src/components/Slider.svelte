@@ -1,6 +1,8 @@
+<svelte:options immutable/>
+
 <script lang="ts">
   import {clamp, createFilter, getEventCoords} from "../utils";
-  import {range, filter} from "../logic/store";
+  import {range, filter, histogram} from "../logic/store";
   
 
   let slider: HTMLElement;
@@ -71,6 +73,14 @@
 
 
 <div class="container" class:dragging style="--s:{model.s};--e:{model.e}">
+  <div class="histogram">
+    {#each $histogram as bin}
+    <div class="bin" style="--percent: {bin.scaled}">
+      {bin.count}
+    </div>
+    {/each}
+  </div>
+
   <div class="slider" bind:this={slider}>
     <div class="range"
       use:draggable
@@ -90,19 +100,36 @@
 
 <style lang="scss">
   .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
     width: 40em;
-    height: 1.5em;
+    height: 8em;
     user-select: none;
     white-space: nowrap;
     --s: 0;
     --e: 1;
 
+    .histogram {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-evenly;
+      height: 4em;
+      margin-bottom: 1em;
+
+      .bin {
+        position: relative;
+        height: calc(100% * var(--percent));
+        background-color: gray;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+      }
+    }
+
     .slider {
       position: relative;
-      top: 50%;
       width: 100%;
       height: 0.5em;
-      transform: translateY(-50%);
       border-radius: 1px;
       background-color: #e2e2e2;
       box-shadow: inset 0 7px 10px -5px #4a4a4a, inset 0 -1px 0 0 #9c9c9c;
