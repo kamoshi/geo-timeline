@@ -4,10 +4,9 @@ import checker from "vite-plugin-checker";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/geo-timeline/',
   plugins: [
-    checker({
-      typescript: true,
-    }),
+    checker({typescript: true}),
     svelte(),
   ],
 })

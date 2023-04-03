@@ -75,9 +75,7 @@
 <div class="container" class:dragging style="--s:{model.s};--e:{model.e}">
   <div class="histogram">
     {#each $histogram as bin}
-    <div class="bin" style="--percent: {bin.scaled}">
-      {bin.count}
-    </div>
+    <div class="bin" style="--percent: {bin.scaled}"></div>
     {/each}
   </div>
 
@@ -115,14 +113,18 @@
       align-items: flex-end;
       justify-content: space-evenly;
       height: 4em;
-      margin-bottom: 1em;
+      margin-bottom: 0.2em;
 
       .bin {
         position: relative;
         height: calc(100% * var(--percent));
         background-color: gray;
-        writing-mode: vertical-rl;
-        text-orientation: mixed;
+        opacity: 0;
+        transition: opacity linear 100ms;
+
+        &::after {
+          content: "\00a0";
+        }
       }
     }
 
@@ -133,6 +135,7 @@
       border-radius: 1px;
       background-color: #e2e2e2;
       box-shadow: inset 0 7px 10px -5px #4a4a4a, inset 0 -1px 0 0 #9c9c9c;
+      cursor: grab;
     }
 
     .handle {
@@ -184,6 +187,10 @@
         color: white;
         opacity: 0.5;
         border-radius: 4px;
+      }
+
+      .bin {
+        opacity: 0.5;
       }
     }
   }

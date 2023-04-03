@@ -8,7 +8,7 @@ export function toBins(
   scope: Immutable<DateRange>,
   locations: Immutable<GeoLocation[]>
 ) {
-  const BINS = 25;
+  const BINS = 100;
   const [s, e] = [scope.s.valueOf(), scope.e.valueOf()];
   const width = (e - s) / BINS;
   const bins = pipe(
